@@ -115,7 +115,6 @@ def generate_report(performance_metrics, similarities, ground_truth_labels):
         f"AUC (ROC): {roc_auc:.2f}\n"
     )
     print(report)
-    # Puedes añadir código aquí para guardar el informe en un archivo si es necesario.
 
 
 
@@ -123,71 +122,59 @@ def generate_report(performance_metrics, similarities, ground_truth_labels):
 if __name__ == "__main__":
     # Directorios de los documentos
     path_to_originals = './TextosOriginales'
-    path_to_suspicious = './TextosConPlagio'
-    
+    path_to_suspicious = './FinalTesting'
     # Cargar y procesar los documentos
     original_filenames, original_texts = read_files_in_directory(path_to_originals)
     suspicious_filenames, suspicious_texts = read_files_in_directory(path_to_suspicious)
-
     # Preprocesar todos los textos
     processed_originals = [preprocess(text) for text in original_texts]
     processed_suspicious = [preprocess(text) for text in suspicious_texts]
-
     # Crear modelos de espacio vectorial común
     original_vectors, suspicious_vectors, feature_names = generate_vector_space_models(processed_originals, processed_suspicious)
-
     # Calcular similitud de coseno
     similarities = cosine_similarity(suspicious_vectors, original_vectors)
-
     # Reportar resultados
-    threshold = 0  # Umbral de similitud
-
-
+    threshold = 0.0  # Umbral de similitud
     # Información de ground truth para evaluación
     ground_truth = {
-        'FID-01.txt': True,
-        'FID-02.txt': True,
-        'FID-03.txt': True,
-        'FID-04.txt': True,
-        'FID-05.txt': True,
-        'FID-06.txt': True,
-        'FID-07.txt': True,
-        'FID-08.txt': True,
-        'FID-09.txt': True,
-        'FID-10.txt': True,
-        'FID-11.txt': True,
-        'FID-12.txt': True,
-        'FID-13.txt': True,
-        'FID-14.txt': True,
-        'FID-15.txt': True,
-        'FID-16.txt': False,
-        'FID-17.txt': False,
-        'FID-18.txt': False,
-        'FID-19.txt': True,
-        'FID-20.txt': False,
-        'FID-21.txt': True,
-        'FID-22.txt': True,
-        'FID-23.txt': True,
-        'FID-24.txt': True,
-        'FID-25.txt': True,
-        'FID-26.txt': False,
-        'FID-27.txt': True,
-        'FID-28.txt': True,
-        'FID-29.txt': False,
-        'FID-30.txt': False,
-        'FID-31.txt': False,
+        'FID-001.txt': False,
+        'FID-002.txt': False,
+        'FID-003.txt': False,
+        'FID-004.txt': False,
+        'FID-005.txt': True,
+        'FID-006.txt': False,
+        'FID-007.txt': False,
+        'FID-008.txt': False,
+        'FID-009.txt': False,
+        'FID-010.txt': True,
+        'FID-011.txt': False,
+        'FID-012.txt': False,
+        'FID-013.txt': False,
+        'FID-014.txt': False,
+        'FID-015.txt': False,
+        'FID-016.txt': True,
+        'FID-017.txt': False,
+        'FID-018.txt': True,
+        'FID-019.txt': True,
+        'FID-020.txt': False,
+        'FID-021.txt': False,
+        'FID-022.txt': True,
+        'FID-023.txt': True,
+        'FID-024.txt': False,
+        'FID-025.txt': False,
+        'FID-026.txt': True,
+        'FID-027.txt': True,
+        'FID-028.txt': False,
+        'FID-029.txt': True,
+        'FID-030.txt': False
     }
-    
     # Aplanar las similitudes y preparar las etiquetas de ground truth
     all_similarities = []
     ground_truth_labels = []
-
     for i, filename in enumerate(suspicious_filenames):
         for j in range(len(original_filenames)):
             all_similarities.append(similarities[i][j])
-            # Asumimos que ground_truth usa nombres de archivos sospechosos y marca si son plagiados
             ground_truth_labels.append(1 if ground_truth[filename] else 0)
-
     for i, filename in enumerate(suspicious_filenames):
         print("\n")
         print(f"Top coincidencias para el archivo sospechoso '{filename}':")
@@ -197,9 +184,6 @@ if __name__ == "__main__":
         for original_file, sim in top_5_similarities:
             if sim > threshold:
                 print(f"- {original_file} con una similitud del {sim*100:.2f}%")
-
-    fin = time.time()
-    print(f'\n El tiempo de ejecución fue de : {fin-inicio}')
     # Evaluación del rendimiento
     performance_metrics = evaluate_performance(similarities, threshold, ground_truth, suspicious_filenames)
     # Llamada a generate_report
